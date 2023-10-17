@@ -1,17 +1,4 @@
-let tasks = [
-    {
-        name: 'Zmyc naczynia',
-        isCompleted: false
-    },
-    {
-        name: 'Umyc podloge',
-        isCompleted: true
-    },
-    {
-        name: 'Ala ma kota',
-        isCompleted: true
-    },
-]
+let tasks = []
 let mainContainer = null
 let searchPhrase = ''
 let filter = 'ALL'
@@ -19,6 +6,37 @@ let sort = 'ASCENDING'
 let isSearchInputFocused = false
 let nameToDoInput = ''
 let isNameToDoInputFocused = false
+
+const saveToLocalStorage = () => {
+
+    const state = {
+        tasks,
+        searchPhrase,
+        filter,
+        sort,
+        isSearchInputFocused,
+        nameToDoInput,
+        isNameToDoInputFocused,
+    }
+
+    localStorage.setItem('todo', JSON.stringify(state))
+
+}
+
+const loadFromLocalStorage = () => {
+    const state = JSON.parse(localStorage.getItem('todo'))
+
+    if (!state) return
+
+    tasks = state.tasks
+    searchPhrase = state.searchPhrase
+    filter = state.filter
+    sort = state.sort
+    isSearchInputFocused = state.isSearchInputFocused
+    nameToDoInput = state.nameToDoInput
+    isNameToDoInputFocused = state.isNameToDoInputFocused
+
+}
 
 const sortDescending = function (taskA, taskB) {
     return -(taskA.name.localeCompare(taskB.name))
@@ -110,7 +128,6 @@ const onSubmitNewNameForm = (e) => {
 const onChangeNewNameInput = (e) => {
     isSearchInputFocused = false
     isNameToDoInputFocused = true
-    console.log(e.target.value)
     nameToDoInput = e.target.value
     update()
 }
@@ -135,7 +152,7 @@ const renderButton = (label, onClick, className) => {
 
 }
 
-const renderInput = (placeholder, onChange, value, className) => {
+const renderInput = (placeholder, onChange, value, className, condition) => {
 
     const input = document.createElement('input')
     input.className = className
@@ -144,9 +161,9 @@ const renderInput = (placeholder, onChange, value, className) => {
 
     input.setAttribute('placeholder', placeholder)
 
-    focus(isNameToDoInputFocused, input)
     input.addEventListener('input', onChange)
 
+    focus(condition, input)
 
     return input
 
@@ -212,7 +229,8 @@ const renderForm = (onSubmit, onInput) => {
         'Type your task',
         onInput,
         nameToDoInput,
-        'todo-list__input'
+        'todo-list__input',
+        isNameToDoInputFocused
     )
 
     form.appendChild(formInput)
@@ -225,9 +243,9 @@ const renderSearchInput = (onChange) => {
 
     const container = document.createElement('div')
     container.className = 'todo-list__search'
-    const searchInput = renderInput('Type your searching phrase', onChange, searchPhrase, 'todo-list__input')
+    const searchInput = renderInput('Type your searching phrase', onChange, searchPhrase, 'todo-list__input', isSearchInputFocused)
 
-    focus(isSearchInputFocused, searchInput)
+    // focus(isSearchInputFocused, searchInput)
 
     container.appendChild(searchInput)
     return container
@@ -297,6 +315,8 @@ const update = () => {
 
     const app = render()
 
+    saveToLocalStorage()
+
     mainContainer.appendChild(app)
 
 }
@@ -343,6 +363,8 @@ const init = (containerSelector) => {
         console.error('Type correct container')
     }
     mainContainer = container
+
+    loadFromLocalStorage()
 
     const app = render()
 
