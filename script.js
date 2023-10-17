@@ -51,6 +51,18 @@ const onClickDeleteButton = (indexToDelete) => {
     update()
 
 }
+const onFilterChange = (filterValue) => {
+    filter = filterValue
+    update()
+}
+const filteredByCompleted = (task) => {
+
+    if (filter === 'ALL') return task
+    if (filter === 'DONE') return task.isCompleted
+    if (filter === 'NOT-DONE') return !task.isCompleted
+
+    return true
+}
 const filteredBySearch = (task) => {
 
     const name = task.name.toUpperCase()
@@ -204,6 +216,34 @@ const renderSearchInput = (onChange) => {
     return container
 
 }
+const renderFilterButton = (filterValue, activeFilter) => {
+
+    let className = 'todo-list__button todo-list__button--filter'
+    if (filterValue === activeFilter) {
+        className = className + ' todo-list__button--filter-active'
+    }
+
+    return renderButton(
+        filterValue,
+        () => { onFilterChange(filterValue) },
+        className
+    )
+}
+const renderFilter = (activeFilter) => {
+
+    const container = document.createElement('div')
+
+    const buttonAll = renderFilterButton('ALL', activeFilter)
+    const buttonDone = renderFilterButton('DONE', activeFilter)
+    const buttonNotDone = renderFilterButton('NOT-DONE', activeFilter)
+
+    container.appendChild(buttonAll)
+    container.appendChild(buttonDone)
+    container.appendChild(buttonNotDone)
+
+    return container
+
+}
 const update = () => {
 
     mainContainer.innerHTML = ''
@@ -217,15 +257,18 @@ const render = () => {
 
     const container = document.createElement('div')
 
-    const filteredTasks = tasks.
-        filter(filteredBySearch)
+    const filteredTasks = tasks
+        .filter(filteredBySearch)
+        .filter(filteredByCompleted)
 
     const tasksElement = renderTasks(filteredTasks)
     const formElement = renderForm(onSubmitNewNameForm, onChangeNewNameInput)
     const searchElement = renderSearchInput(onChangeSearchInput)
+    const filterElement = renderFilter(filter)
 
     container.appendChild(formElement)
     container.appendChild(searchElement)
+    container.appendChild(filterElement)
     container.appendChild(tasksElement)
 
     return container
