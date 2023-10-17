@@ -4,7 +4,7 @@ let tasks = [
         isCompleted: false
     },
     {
-        name: 'Zmyc naczynia',
+        name: 'Zmyc podloge',
         isCompleted: true
     },
 ]
@@ -51,6 +51,15 @@ const onClickDeleteButton = (indexToDelete) => {
     update()
 
 }
+const filteredBySearch = (task) => {
+
+    const name = task.name.toUpperCase()
+    const search = searchPhrase.toUpperCase()
+
+    if (name.includes(search)) return true
+
+    return false
+}
 const addNewTask = (newName) => {
 
     const newTask = {
@@ -74,6 +83,12 @@ const onChangeNewNameInput = (e) => {
     isNameToDoInputFocused = true
     console.log(e.target.value)
     nameToDoInput = e.target.value
+    update()
+}
+const onChangeSearchInput = (e) => {
+    isSearchInputFocused = true
+    isNameToDoInputFocused = false
+    searchPhrase = e.target.value
     update()
 }
 const renderButton = (label, onClick, className) => {
@@ -177,6 +192,18 @@ const renderForm = (onSubmit, onInput) => {
     return form
 
 }
+const renderSearchInput = (onChange) => {
+
+    const container = document.createElement('div')
+    container.className = 'todo-list__search'
+    const searchInput = renderInput('Type your searching phrase', onChange, searchPhrase, 'todo-list__input')
+
+    focus(isSearchInputFocused, searchInput)
+
+    container.appendChild(searchInput)
+    return container
+
+}
 const update = () => {
 
     mainContainer.innerHTML = ''
@@ -190,10 +217,15 @@ const render = () => {
 
     const container = document.createElement('div')
 
-    const tasksElement = renderTasks(tasks)
+    const filteredTasks = tasks.
+        filter(filteredBySearch)
+
+    const tasksElement = renderTasks(filteredTasks)
     const formElement = renderForm(onSubmitNewNameForm, onChangeNewNameInput)
+    const searchElement = renderSearchInput(onChangeSearchInput)
 
     container.appendChild(formElement)
+    container.appendChild(searchElement)
     container.appendChild(tasksElement)
 
     return container
