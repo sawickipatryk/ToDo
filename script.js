@@ -1,6 +1,7 @@
-const app = (function () {
+const createToDoInit = function () {
     let tasks = []
     let mainContainer = null
+    let localStorageKey = ''
     let searchPhrase = ''
     let filter = 'ALL'
     let sort = 'ASCENDING'
@@ -20,12 +21,12 @@ const app = (function () {
             isNameToDoInputFocused,
         }
 
-        localStorage.setItem('todo', JSON.stringify(state))
+        localStorage.setItem(localStorageKey, JSON.stringify(state))
 
     }
 
     const loadFromLocalStorage = () => {
-        const state = JSON.parse(localStorage.getItem('todo'))
+        const state = JSON.parse(localStorage.getItem(localStorageKey))
 
         if (!state) return
 
@@ -363,7 +364,7 @@ const app = (function () {
         return container
 
     }
-    const init = (containerSelector = 'body') => {
+    const init = (containerSelector = 'body', key) => {
 
         const container = document.querySelector(containerSelector)
 
@@ -371,6 +372,7 @@ const app = (function () {
             console.error('Type correct container')
         }
         mainContainer = container
+        localStorageKey = key
 
         loadFromLocalStorage()
 
@@ -380,5 +382,5 @@ const app = (function () {
 
     }
     return init
-})()
+}
 

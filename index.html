@@ -9,8 +9,14 @@
 <body>  
 
     <div class="root"></div>
+    <div class="root-1"></div>
 
 <script src="script.js"></script>
-<script>app('.root')</script>
+<script>
+    const app1 = createToDoInit()
+    const app2 = createToDoInit()
+    app1('.root','todo')
+    app2('.root-1','todo-1')
+</script>
 </body>
 </html>
