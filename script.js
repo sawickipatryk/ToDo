@@ -4,16 +4,29 @@ let tasks = [
         isCompleted: false
     },
     {
-        name: 'Zmyc podloge',
+        name: 'Umyc podloge',
+        isCompleted: true
+    },
+    {
+        name: 'Ala ma kota',
         isCompleted: true
     },
 ]
 let mainContainer = null
 let searchPhrase = ''
 let filter = 'ALL'
+let sort = 'ASCENDING'
 let isSearchInputFocused = false
 let nameToDoInput = ''
 let isNameToDoInputFocused = false
+
+const sortDescending = function (taskA, taskB) {
+    return -(taskA.name.localeCompare(taskB.name))
+}
+const sortAscending = function (taskA, taskB) {
+    return taskA.name.localeCompare(taskB.name)
+}
+const sortNone = function (taskA, taskB) { return 0 }
 
 const focus = (condition, element) => {
     if (condition) {
@@ -53,6 +66,10 @@ const onClickDeleteButton = (indexToDelete) => {
 }
 const onFilterChange = (filterValue) => {
     filter = filterValue
+    update()
+}
+const onSortChange = (sortValue) => {
+    sort = sortValue
     update()
 }
 const filteredByCompleted = (task) => {
@@ -232,6 +249,7 @@ const renderFilterButton = (filterValue, activeFilter) => {
 const renderFilter = (activeFilter) => {
 
     const container = document.createElement('div')
+    container.classList = 'todo-list__filters'
 
     const buttonAll = renderFilterButton('ALL', activeFilter)
     const buttonDone = renderFilterButton('DONE', activeFilter)
@@ -240,6 +258,35 @@ const renderFilter = (activeFilter) => {
     container.appendChild(buttonAll)
     container.appendChild(buttonDone)
     container.appendChild(buttonNotDone)
+
+    return container
+
+}
+const renderSortButton = (sortValue, activeSort) => {
+
+    let className = 'todo-list__button todo-list__button--sort'
+    if (sortValue === activeSort) {
+        className = className + ' todo-list__button--sort-active'
+    }
+
+    return renderButton(
+        sortValue,
+        () => { onSortChange(sortValue) },
+        className
+    )
+}
+const renderSortButtons = (activeSort) => {
+
+    const container = document.createElement('div')
+    container.classList = 'todo-list__sort'
+
+    const buttonNone = renderSortButton('NONE', activeSort)
+    const buttonAscending = renderSortButton('ASCENDING', activeSort)
+    const buttonDescending = renderSortButton('DESCENDING', activeSort)
+
+    container.appendChild(buttonNone)
+    container.appendChild(buttonAscending)
+    container.appendChild(buttonDescending)
 
     return container
 
@@ -261,14 +308,28 @@ const render = () => {
         .filter(filteredBySearch)
         .filter(filteredByCompleted)
 
-    const tasksElement = renderTasks(filteredTasks)
+    const sortedTasks = filteredTasks
+        .slice()
+        .sort((taskA, taskB) => {
+            if (sort === 'NONE') {
+                return sortNone(taskA, taskB)
+            }
+            if (sort === 'ASCENDING') {
+                return sortAscending(taskA, taskB)
+            }
+            return sortDescending(taskA, taskB)
+        })
+
+    const tasksElement = renderTasks(sortedTasks)
     const formElement = renderForm(onSubmitNewNameForm, onChangeNewNameInput)
     const searchElement = renderSearchInput(onChangeSearchInput)
     const filterElement = renderFilter(filter)
+    const sortsElement = renderSortButtons(sort)
 
     container.appendChild(formElement)
     container.appendChild(searchElement)
     container.appendChild(filterElement)
+    container.appendChild(sortsElement)
     container.appendChild(tasksElement)
 
     return container
