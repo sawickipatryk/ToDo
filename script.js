@@ -115,6 +115,25 @@ const app = () => {
         update()
 
     }
+    const onClickTaskToCompleted = (idToCompleted) => {
+
+        tasks = tasks.map((task) => {
+
+            if (task.id !== idToCompleted) return task
+
+            return {
+
+                name: task.name,
+                isCompleted: !task.isCompleted,
+                id: task.id
+
+            }
+
+        })
+
+        update()
+
+    }
     const onChangeTaskInput = (e) => {
         isSearchPhraseFocues = false
         istaskToDoInputFocused = true
@@ -126,20 +145,33 @@ const app = () => {
         addTask(taskToDoInput)
     }
 
-    const renderTask = (task, onDelete) => {
+    const renderTask = (task, onClick, onDelete) => {
 
         const li = document.createElement('li')
+        const wrapper = document.createElement('div')
+        const textContainer = document.createElement('div')
+
+
         li.className = 'todo-list__item-task'
+        wrapper.className = 'todo-list__item-task-wrapper'
+        textContainer.className = 'todo-list__list-item-text-container'
+
+        if (task.isCompleted) {
+            textContainer.className = `${textContainer.className} todo-list__item-task--completed`
+        }
+
+        li.addEventListener('click', onClick)
 
         const text = document.createTextNode(task.name)
-        const textContainer = document.createElement('div')
 
         const deleteButton = renderButton('X', onDelete)
 
 
         textContainer.appendChild(text)
-        li.appendChild(text)
-        li.appendChild(deleteButton)
+        wrapper.appendChild(textContainer)
+        wrapper.appendChild(deleteButton)
+        li.appendChild(wrapper)
+
         return li
 
     }
@@ -152,6 +184,7 @@ const app = () => {
         tasks = tasks.map((task) => {
             return renderTask(
                 task,
+                () => { onClickTaskToCompleted(task.id) },
                 () => { onClickButtonDelete(task.id) }
             )
         })
