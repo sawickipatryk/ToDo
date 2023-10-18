@@ -51,13 +51,19 @@
     padding: 10px 5px;
 }
 .todo-list__item-task{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     list-style: none;
     font-size: 1.2rem;
     padding: 15px 10px;
     background-color: #f782c2;
     border-radius: 10px;
     margin-bottom: 10px;
+}
+.todo-list__item-task-wrapper{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.todo-list__list-item-text-container.todo-list__item-task--completed{
+    text-decoration: line-through;
+    color:#737373;
 }
