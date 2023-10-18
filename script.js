@@ -38,6 +38,14 @@ const app = () => {
         taskToDoInput = state.taskToDoInput
         istaskToDoInputFocused = state.istaskToDoInputFocused
     }
+    const sortDescending = (taskA, taskB) => {
+        return -(taskA.name.localeCompare(taskB.name))
+    }
+    const sortAscending = (taskA, taskB) => {
+        return (taskA.name.localeCompare(taskB.name))
+    }
+    const sortNone = (taskA, taskB) => { return 0 }
+
     const focus = (input, condition) => {
         if (condition) {
             setTimeout(() => {
@@ -156,6 +164,26 @@ const app = () => {
         return false
 
     }
+    const filterByCompleted = (task) => {
+
+        if (filter === 'ALL') return task
+
+        if (filter === 'DONE') return task.isCompleted
+
+        if (filter === 'NOT-DONE') return !task.isCompleted
+
+        return true
+    }
+    const onFilterChange = (filterValue) => {
+        filter = filterValue
+
+        update()
+    }
+    const onSortChange = (sortValue) => {
+        sort = sortValue
+
+        update()
+    }
     const onSubmitNewTaskForm = (e) => {
         e.preventDefault()
         addTask(taskToDoInput)
@@ -251,6 +279,68 @@ const app = () => {
         return container
 
     }
+    const renderFilterButton = (filterValue, activeFilter) => {
+        let className = 'todo-list__button todo-list__button--filter'
+
+        if (filterValue === activeFilter) {
+            className = `${className} todo-list__button--filter-active`
+        }
+
+
+        return renderButton(
+            filterValue,
+            () => { onFilterChange(filterValue) },
+            className
+        )
+
+    }
+    const renderFilters = (activeFilter) => {
+
+        const container = document.createElement('div')
+        container.className = 'todo-list__filters-container'
+
+        const buttonAll = renderFilterButton('All', activeFilter)
+        const buttonDone = renderFilterButton('DONE', activeFilter)
+        const buttonNotDone = renderFilterButton('NOT-DONE', activeFilter)
+
+        container.appendChild(buttonAll)
+        container.appendChild(buttonDone)
+        container.appendChild(buttonNotDone)
+
+        return container
+
+    }
+    const renderSortButton = (SortValue, activeSort) => {
+        let className = 'todo-list__button todo-list__button--sort'
+
+        if (SortValue === activeSort) {
+            className = `${className} todo-list__button--sort-active`
+        }
+
+
+        return renderButton(
+            SortValue,
+            () => { onSortChange(SortValue) },
+            className
+        )
+
+    }
+    const renderSort = (activeSort) => {
+
+        const container = document.createElement('div')
+        container.className = 'todo-list__sort-container'
+
+        const buttonAll = renderSortButton('NONE', activeSort)
+        const buttonDone = renderSortButton('ASCENDING', activeSort)
+        const buttonNotDone = renderSortButton('DESCENDING', activeSort)
+
+        container.appendChild(buttonAll)
+        container.appendChild(buttonDone)
+        container.appendChild(buttonNotDone)
+
+        return container
+
+    }
 
     const update = () => {
 
@@ -269,15 +359,30 @@ const app = () => {
         container.className = 'todo-list__container'
 
         const filteredTasks = tasks
-            .filter(
-                filterBySearchPhrase
-            )
+            .filter(filterBySearchPhrase)
+            .filter(filterByCompleted)
+
+        const sortedTasks = filteredTasks
+            .slice()
+            .sort((taskA, taskB) => {
+                if (sort === 'NONE') {
+                    return sortNone(taskA, taskB)
+                }
+                if (sort === 'ASCENDING') {
+                    return sortAscending(taskA, taskB)
+                }
+                return sortDescending(taskA, taskB)
+            })
 
         const formElement = renderForm()
+        const filtersElement = renderFilters(filter)
+        const sortElement = renderSort(sort)
         const searchElement = renderSearch()
-        const tasksElement = renderTasks(filteredTasks)
+        const tasksElement = renderTasks(sortedTasks)
 
         container.appendChild(formElement)
+        container.appendChild(filtersElement)
+        container.appendChild(sortElement)
         container.appendChild(searchElement)
         container.appendChild(tasksElement)
 
