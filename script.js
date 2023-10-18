@@ -39,6 +39,41 @@ const app = () => {
         isNameToDoInputFocused = state.isNameToDoInputFocused
     }
 
+    const appendArray = (array, container) => {
+
+        array.forEach((element) => {
+            container.appendChild(element)
+        })
+
+    }
+
+    const renderTask = (task) => {
+
+        const li = document.createElement('li')
+        const text = document.createTextNode(task.name)
+        const textContainer = document.createElement('div')
+
+
+        textContainer.appendChild(text)
+        li.appendChild(text)
+        return li
+
+    }
+
+    const renderTasks = (tasks) => {
+
+        const ol = document.createElement('ol')
+
+        tasks = tasks.map((task) => {
+            renderTask(task)
+        })
+
+        appendArray(tasks, ol)
+
+        return ol
+
+    }
+
     const update = () => {
 
         mainContainer.innerHTML = ''
@@ -53,6 +88,10 @@ const app = () => {
     const render = () => {
 
         const container = document.createElement('div')
+
+        const tasksElement = renderTasks(tasks)
+
+        container.appendChild(tasksElement)
 
         return container
 
