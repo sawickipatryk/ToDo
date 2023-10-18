@@ -83,9 +83,11 @@ const app = () => {
 
         const button = document.createElement('button')
         button.className = 'todo-list__button'
+
         if (className) {
             button.className = `todo-list__button ${className}`
         }
+
         if (onClick) {
             button.addEventListener('click', onClick)
         }
@@ -189,6 +191,20 @@ const app = () => {
         addTask(taskToDoInput)
     }
 
+    const renderHeader = () => {
+        const container = document.createElement('div')
+        container.className = 'todo-list__header-container'
+
+        const h1 = document.createElement('h1')
+        h1.className = 'todo-list__header'
+
+        h1.innerHTML = 'ToDo'
+
+        container.appendChild(h1)
+
+        return container
+    }
+
     const renderTask = (task, onClick, onDelete) => {
 
         const li = document.createElement('li')
@@ -208,7 +224,7 @@ const app = () => {
 
         const text = document.createTextNode(task.name)
 
-        const deleteButton = renderButton('X', onDelete)
+        const deleteButton = renderButton('X', onDelete, 'todo-list__button-delete')
 
 
         textContainer.appendChild(text)
@@ -374,12 +390,14 @@ const app = () => {
                 return sortDescending(taskA, taskB)
             })
 
+        const header = renderHeader()
         const formElement = renderForm()
         const filtersElement = renderFilters(filter)
         const sortElement = renderSort(sort)
         const searchElement = renderSearch()
         const tasksElement = renderTasks(sortedTasks)
 
+        container.appendChild(header)
         container.appendChild(formElement)
         container.appendChild(filtersElement)
         container.appendChild(sortElement)

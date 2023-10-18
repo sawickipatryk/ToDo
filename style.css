@@ -8,8 +8,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100vh;
     background-color: #e3e3e3;
+    min-height: 100vh;
 }
 .todo-list__container{
     display: flex;
@@ -19,6 +19,12 @@
     max-width: 1024px;
     width: 400px;
     padding: 0px 10px;
+}
+.todo-list__header-container{
+    margin-bottom: 30px;
+}
+.todo-list__header{
+    font-size: 3rem;
 }
 .todo-list__form{
     width: 100%;
@@ -55,6 +61,9 @@
     border-radius: 5px;
     background-color: #f9c46b;
     cursor: pointer;
+}
+.todo-list__button.todo-list__button-delete{
+    font-size: 1.1rem;
 }
 .todo-list__button.todo-list__button-add{
     border-radius: 0px 10px 10px 0px;
@@ -106,5 +115,14 @@ width: 30%;
 @media screen and (min-width: 900px) {
     .todo-list__button{    
             font-size: 0.9rem;
+    }
+    .todo-list__button.todo-list__button-delete{    
+            font-size: 1.2rem;
+    }
+    .todo-list__header-container{
+        margin-bottom: 35px;
+    }
+    .todo-list__header{
+        font-size: 4rem;
     }
   }
