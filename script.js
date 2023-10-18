@@ -8,8 +8,8 @@ const app = () => {
     let isSearchPhraseFocues = false
     let sort = 'NONE'
     let filter = 'ALL'
-    let nameToDoInput = ''
-    let isNameToDoInputFocused = false
+    let taskToDoInput = ''
+    let istaskToDoInputFocused = false
 
     const saveToLocalStorage = () => {
         const state = {
@@ -18,8 +18,8 @@ const app = () => {
             isSearchPhraseFocues,
             sort,
             filter,
-            nameToDoInput,
-            isNameToDoInputFocused,
+            taskToDoInput,
+            istaskToDoInputFocused,
         }
 
         localStorage.setItem('tasks', JSON.stringify(state))
@@ -35,8 +35,15 @@ const app = () => {
         isSearchPhraseFocues = state.isSearchPhraseFocues
         sort = state.sort
         filter = state.filter
-        nameToDoInput = state.nameToDoInput
-        isNameToDoInputFocused = state.isNameToDoInputFocused
+        taskToDoInput = state.taskToDoInput
+        istaskToDoInputFocused = state.istaskToDoInputFocused
+    }
+    const focus = (input, condition) => {
+        if (condition) {
+            setTimeout(() => {
+                input.focus()
+            }, 0)
+        }
     }
 
     const appendArray = (array, container) => {
@@ -46,16 +53,93 @@ const app = () => {
         })
 
     }
+    const renderInput = (placeholder, onChange, value, condition, className) => {
 
-    const renderTask = (task) => {
+        const input = document.createElement('input')
+        input.className = 'todo-list__input'
+        if (className) {
+            input.className = `todo-list__input ${className}`
+        }
+        input.value = value
+
+        input.addEventListener('input', onChange)
+
+        input.setAttribute('placeholder', placeholder)
+
+        focus(input, condition)
+
+        return input
+
+    }
+    const renderButton = (label, onClick, className) => {
+
+        const button = document.createElement('button')
+        button.className = 'todo-list__button'
+        if (className) {
+            button.className = `todo-list__button ${className}`
+        }
+        if (onClick) {
+            button.addEventListener('click', onClick)
+        }
+        button.innerText = label
+
+        return button
+
+    }
+    const addTask = (newTaskFromInput) => {
+
+        if (!newTaskFromInput) return
+
+        const newTaskFromInputWithCapitalizeFirstLetter = newTaskFromInput.charAt(0).toUpperCase() + newTaskFromInput.slice(1)
+
+
+        const newTask = {
+            name: newTaskFromInputWithCapitalizeFirstLetter,
+            isCompleted: false,
+            id: Date.now()
+        }
+
+        tasks = tasks.concat(newTask)
+
+        taskToDoInput = ''
+
+        update()
+
+    }
+    const onClickButtonDelete = (idToRemove) => {
+
+        tasks = tasks.filter((task) => {
+            return task.id !== idToRemove
+        })
+
+        update()
+
+    }
+    const onChangeTaskInput = (e) => {
+        isSearchPhraseFocues = false
+        istaskToDoInputFocused = true
+        taskToDoInput = e.target.value
+        update()
+    }
+    const onSubmitNewTaskForm = (e) => {
+        e.preventDefault()
+        addTask(taskToDoInput)
+    }
+
+    const renderTask = (task, onDelete) => {
 
         const li = document.createElement('li')
+        li.className = 'todo-list__item-task'
+
         const text = document.createTextNode(task.name)
         const textContainer = document.createElement('div')
+
+        const deleteButton = renderButton('X', onDelete)
 
 
         textContainer.appendChild(text)
         li.appendChild(text)
+        li.appendChild(deleteButton)
         return li
 
     }
@@ -63,14 +147,35 @@ const app = () => {
     const renderTasks = (tasks) => {
 
         const ol = document.createElement('ol')
+        ol.className = 'todo-list__tasks-container'
 
         tasks = tasks.map((task) => {
-            renderTask(task)
+            return renderTask(
+                task,
+                () => { onClickButtonDelete(task.id) }
+            )
         })
 
         appendArray(tasks, ol)
 
         return ol
+
+    }
+
+    const renderForm = () => {
+
+        const form = document.createElement('form')
+        form.className = 'todo-list__form'
+
+        const inputForm = renderInput('Type your task', onChangeTaskInput, taskToDoInput, istaskToDoInputFocused)
+        const buttonForm = renderButton('ADD', null, 'todo-list__button-add',)
+
+        form.addEventListener('submit', onSubmitNewTaskForm)
+
+        form.appendChild(inputForm)
+        form.appendChild(buttonForm)
+
+        return form
 
     }
 
@@ -88,9 +193,12 @@ const app = () => {
     const render = () => {
 
         const container = document.createElement('div')
+        container.className = 'todo-list__container'
 
         const tasksElement = renderTasks(tasks)
+        const formElement = renderForm()
 
+        container.appendChild(formElement)
         container.appendChild(tasksElement)
 
         return container
