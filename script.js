@@ -140,6 +140,22 @@ const app = () => {
         taskToDoInput = e.target.value
         update()
     }
+    const onChangeSearchInput = (e) => {
+        isSearchPhraseFocues = true
+        istaskToDoInputFocused = false
+        searchPhrase = e.target.value
+        update()
+    }
+    const filterBySearchPhrase = (task) => {
+
+        const taskToUpperCase = task.name.toUpperCase()
+        const searchPhraseToUpperCase = searchPhrase.toUpperCase()
+
+        if (taskToUpperCase.includes(searchPhraseToUpperCase)) return true
+
+        return false
+
+    }
     const onSubmitNewTaskForm = (e) => {
         e.preventDefault()
         addTask(taskToDoInput)
@@ -200,8 +216,16 @@ const app = () => {
         const form = document.createElement('form')
         form.className = 'todo-list__form'
 
-        const inputForm = renderInput('Type your task', onChangeTaskInput, taskToDoInput, istaskToDoInputFocused)
-        const buttonForm = renderButton('ADD', null, 'todo-list__button-add',)
+        const inputForm = renderInput(
+            'Type your task',
+            onChangeTaskInput,
+            taskToDoInput,
+            istaskToDoInputFocused,
+            'todo-list__new-task-input')
+
+        const buttonForm = renderButton('ADD',
+            null,
+            'todo-list__button-add')
 
         form.addEventListener('submit', onSubmitNewTaskForm)
 
@@ -209,6 +233,22 @@ const app = () => {
         form.appendChild(buttonForm)
 
         return form
+
+    }
+    const renderSearch = () => {
+
+        const container = document.createElement('div')
+        container.className = 'todo-list__search-input--container'
+
+        const searchInput = renderInput('Type your searching',
+            onChangeSearchInput,
+            searchPhrase,
+            isSearchPhraseFocues,
+            'todo-list__search-input')
+
+        container.appendChild(searchInput)
+
+        return container
 
     }
 
@@ -228,10 +268,17 @@ const app = () => {
         const container = document.createElement('div')
         container.className = 'todo-list__container'
 
-        const tasksElement = renderTasks(tasks)
+        const filteredTasks = tasks
+            .filter(
+                filterBySearchPhrase
+            )
+
         const formElement = renderForm()
+        const searchElement = renderSearch()
+        const tasksElement = renderTasks(filteredTasks)
 
         container.appendChild(formElement)
+        container.appendChild(searchElement)
         container.appendChild(tasksElement)
 
         return container
