@@ -1,7 +1,7 @@
 # ToDo aplication
 
 ## General info
-This project is simple ToDo ap;ication.
+This project is simple ToDo aplication.
 	
 ## Technologies
 Project is created with:
